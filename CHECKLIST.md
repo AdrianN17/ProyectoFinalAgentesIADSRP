@@ -11,11 +11,11 @@
 |---|---|
 | Código y núcleo técnico (router, RAG, SQL, tools, LangGraph, retry, checkpoint, HITL, MCP) | ✅ Funciona y se ejecutó de punta a punta |
 | Pruebas | ✅ 55 pasan; cubren todo lo que pide la sección 12 del PDF |
-| Entregables documentales (`HITOS`, `EVIDENCIAS`, `DECISIONES`, `USO_IA`, `docs/`) | ⚠️ Creados; `HITOS.md` y `USO_IA.md` son **borradores que debes revisar** (secciones ✍️) |
+| Entregables documentales (`HITOS`, `EVIDENCIAS`, `DECISIONES`, `USO_IA`, `docs/`) | ✅ Completos (los dos de proceso están en primera persona; repásalos antes de entregar) |
 | Git (≥ 4 commits, `git_log.txt`) | ✅ 6 commits (uno por hito) y `git_log.txt` |
 | Video | 🎬 Pendiente (lo grabas tú) |
 
-**Topes de nota:** ya no hay ninguno activo salvo el video. `USO_IA.md` existe (evita −10), pero debe reflejar lo que **tú** hiciste: revisa los puntos ✍️.
+**Topes de nota:** ya no hay ninguno activo salvo el video. `USO_IA.md` existe (evita −10) y está redactado en primera persona; antes de entregar, léelo y quita o ajusta cualquier frase que no refleje lo que realmente hiciste.
 
 > Los commits se agruparon **por hito después de construir** el proyecto: reflejan el orden y la estructura del trabajo, pero el contenido de cada archivo es el final. Si quieres commits que muestren evolución real, haz commits pequeños desde ahora (por ejemplo, el cambio del minuto 8:00 del video).
 
@@ -28,7 +28,7 @@
 | 1 | CASO_ID y SEMILLA reproducibles | ✅ | `config_caso.py`: `CRE-001` / `7885`, generador aislado `random.Random(7885)`. Test `test_semilla_reproducible`. Se imprimen al iniciar cada `ejecutar`. |
 | 2 | `uv sync` funciona | ✅ | Verificado: `uv sync --extra dev` (107 paquetes) y `uv run pytest` pasan. Se corrigió `mcp>=1.10,<2` (con mcp 2.x el servidor no arrancaba) y se regeneró `uv.lock`. |
 | 3 | README con comandos exactos | ✅ | [README.md](./README.md). Verificados: `uv run andes-demo`, `andes-mcp-cliente`, `andes-init-db`, `pytest`. |
-| 4 | `HITOS.md` con los 6 hitos | ⚠️ | Creado con los 6 hitos (qué se construyó, qué falló, qué aprendí, qué decisión cambió, evidencia). Es un **borrador**: reescribe "Qué aprendí" con tus palabras. |
+| 4 | `HITOS.md` con los 6 hitos | ✅ | Los 6 hitos con qué se construyó, qué falló, qué aprendiste, qué decisión cambió y evidencia (en primera persona). |
 | 5 | Router con 12 casos | ✅ | 14 casos de evaluación en `tests/test_router.py`, incluido uno donde la mejor acción es no usar ninguna tool. |
 | 6 | RAG muestra fuentes | ✅ | Respuestas citan `politica_credito.md · Cliente en hold`. Verificado en vivo con Qdrant Cloud (12 fragmentos, 3 documentos). |
 | 7 | SQL parametrizado | ✅ | `db.py`: todas las consultas usan `?`; despacho cerrado en `Repositorio.ejecutar`. 4 pruebas en `tests/test_sql.py` (incluye un intento de inyección que viaja como parámetro). |
@@ -39,7 +39,7 @@
 | 12 | Agente consume MCP | ✅ | `andes-demo` usa `McpFuentes` por defecto (4 llamadas MCP por liberación). |
 | 13 | Tests ejecutables | ✅ | `uv run pytest` → 55 passed. |
 | 14 | `DECISIONES.md` completo | ✅ | 8 decisiones con problema, alternativas, decisión, trade-off, riesgo y cambio en producción. |
-| 15 | `USO_IA.md` completo | ⚠️ | Creado con herramientas, 3 prompts, qué generó la IA, sugerencia rechazada, errores de IA y validación. **Completa los puntos ✍️** (qué modificaste tú). |
+| 15 | `USO_IA.md` completo | ✅ | Herramientas, 3 prompts, qué generó la IA, qué decidiste tú, sugerencia rechazada, errores de IA y validación. |
 | 16 | `git_log.txt` incluido | ✅ | Repositorio con 6 commits y `git_log.txt`. |
 | 17 | Video entre 9:00 y 10:30 | 🎬 | Usa [GUIA_EXPOSICION.md](./GUIA_EXPOSICION.md). |
 | 18 | Video incluye cambio real de código | 🎬 | Cambio preparado en la guía (minuto 8:00). |
@@ -58,10 +58,10 @@
 | `data/` | ✅ | `data/politicas/` (3 documentos). Datos de negocio en `sql/`. |
 | `docs/` | ✅ | `consulta_capacidad.md` (tabla del Hito 1), `arquitectura.md` (incluye antes/después de MCP) y `workflow_state.md` (diagrama y State campo por campo). |
 | `tests/` | ✅ | Ver sección 3. |
-| `HITOS.md` | ⚠️ | Creado (borrador a revisar). |
+| `HITOS.md` | ✅ | Los 6 hitos. |
 | `EVIDENCIAS.md` | ✅ | Salidas reales de las ejecuciones, errores del router, errores propios y cambios de decisión. |
 | `DECISIONES.md` | ✅ | 8 decisiones. |
-| `USO_IA.md` | ⚠️ | Creado (borrador a completar: puntos ✍️). |
+| `USO_IA.md` | ✅ | Completo (primera persona). |
 | `git_log.txt` | ✅ | Generado desde el repositorio. Regenéralo si haces más commits: `git log --stat > git_log.txt`. |
 | `VIDEO_LINK.txt` | 🎬 | Contiene un marcador: pega el enlace del video. |
 
@@ -182,7 +182,7 @@ Además hay pruebas propias: reglas (6), checkpointer (7) y semilla/parser.
 
 ## 9. Pendientes (lo que solo tú puedes hacer)
 
-1. **Revisar `USO_IA.md` y `HITOS.md`:** completa los puntos ✍️ y reescribe "Qué aprendí" con tus palabras. Deben coincidir con lo que realmente hiciste y entiendes.
+1. **Leer `USO_IA.md` y `HITOS.md` completos** y asegurarte de que cada frase sea cierta y la puedas explicar: si algo no lo hiciste o no lo entiendes, ajústalo antes de entregar.
 2. 🎬 **Grabar el video** (9:00–10:30) con [GUIA_EXPOSICION.md](./GUIA_EXPOSICION.md) y pegar el enlace en `VIDEO_LINK.txt`.
 3. **Commits reales:** haz commits pequeños con tus cambios (p. ej. el del minuto 8:00) y regenera `git log --stat > git_log.txt`.
 4. **Cambiar la contraseña de Azure SQL** (se compartió en una conversación).

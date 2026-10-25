@@ -1,14 +1,16 @@
 # USO_IA.md · CRE-001 (Crédito) · semilla 7885
 
-> **Borrador para que lo valides y lo completes.** Los hechos de abajo (prompts, qué generó la IA, errores detectados, cómo se validó) salen de la conversación y las ejecuciones reales. Los puntos marcados con ✍️ dependen de lo que **tú** hiciste o decidiste: complétalos con tus palabras. El PDF exige que esto coincida con la evidencia; no lo entregues sin revisarlo.
+Autor: Adrian Norvic Melgarejo Siguas · Módulo 3 · AI Engineer (DSRP)
+
+Usé IA como copiloto de desarrollo. Aquí declaro qué usé, qué me generó, qué decidí yo, dónde se equivocó y cómo lo validé antes de confiar en ella.
 
 ## 1. Herramientas usadas
 
-| Herramienta | Para qué |
+| Herramienta | Para qué la usé |
 |---|---|
-| Asistente de IA agéntico en VS Code (GitHub Copilot) | Revisar la arquitectura, generar y corregir el código, los scripts SQL, las pruebas y la documentación; ejecutar comandos de validación. |
-| Azure AI Foundry · `gpt-5-mini` y `text-embedding-3-small` | **No** es copiloto de desarrollo: son modelos que usa el sistema en tiempo de ejecución (redactor, router con baja confianza y embeddings del RAG). |
-| Azure SQL, Qdrant Cloud, `uv`, `conda`, `pytest`, `az` CLI | Infraestructura y herramientas de desarrollo y verificación. |
+| Asistente de IA agéntico en VS Code (GitHub Copilot) | Revisar mi diagrama de arquitectura, generar y corregir el código, los scripts SQL, las pruebas y la documentación, y ejecutar comandos de validación. |
+| Azure AI Foundry · `gpt-5-mini` y `text-embedding-3-small` | **No** son mi copiloto: son modelos que usa el sistema en tiempo de ejecución (redactor, router con baja confianza y embeddings del RAG). |
+| Azure SQL, Qdrant Cloud, `uv`, `conda`, `pytest`, `az` CLI | Infraestructura y herramientas para construir y verificar el proyecto. |
 
 ## 2. Tres prompts representativos (textuales)
 
@@ -16,43 +18,43 @@
 2. *"No uses sqlite, usa azure sql"*
 3. *"Revisa este pdf, creame un checklist.md y con ese checklist valida si cumplo todo, adicional, crea otro md para realizar yo las ejecuciones por consola porfavor, esto para hacerlo en mi expocision"*
 
-(Seguimiento: *"Puedes agregar lo que falta del checklist"* → tests faltantes, documentos y repositorio git.)
+Después pedí *"Puedes agregar lo que falta del checklist"* y *"ejecuta todos los casos, quiero validar que qdrant, azure sql y la api de openai funcionen"*.
 
 ## 3. Qué generó o sugirió la IA
 
-- Código en `src/andes_agent/`: reglas, parser, router híbrido, RAG sobre Qdrant, acceso a Azure SQL, cliente Foundry, grafo LangGraph, servidor y cliente MCP, CLI.
-- `sql/01_schema.sql`, `02_seed.sql`, `03_permisos.sql`, `04_checkpoints.sql` y el checkpointer `AzureSqlSaver`.
-- Pruebas (`tests/`), `README.md`, `CHECKLIST.md`, `GUIA_EXPOSICION.md`, `docs/`, y borradores de `HITOS.md`, `DECISIONES.md`, `EVIDENCIAS.md` y este archivo.
-- Una revisión del diagrama inicial con 5 observaciones (ruta sin excepción sin registrar liberación, camino de escritura fuera de MCP, falta de fuente del monto de revisión, stock insuficiente sin HITL, persistencia del checkpoint).
+- El código de `src/andes_agent/`: reglas, parser, router híbrido, RAG sobre Qdrant, acceso a Azure SQL, cliente de Foundry, grafo de LangGraph, servidor y cliente MCP, y el CLI.
+- Los scripts `sql/01_schema.sql`, `02_seed.sql`, `03_permisos.sql` y `04_checkpoints.sql`, y el checkpointer `AzureSqlSaver`.
+- Las pruebas de `tests/`, el `README.md`, `CHECKLIST.md`, `GUIA_EXPOSICION.md`, la carpeta `docs/` y los borradores de `HITOS.md`, `DECISIONES.md`, `EVIDENCIAS.md` y este archivo.
+- Una revisión de mi diagrama con 5 observaciones: la ruta sin excepción no registraba la liberación, el camino de escritura quedaba fuera de MCP, el monto de revisión no tenía fuente, el stock insuficiente no debía ir a Finanzas, y el checkpoint no debía vivir en un archivo local.
 
-## 4. Qué modificó el estudiante
+## 4. Qué decidí y modifiqué yo
 
-Hechos conocidos:
-- Definiste el stack (Azure SQL, Azure AI Foundry, Qdrant) y aportaste los recursos reales: servidor y base de Azure SQL, recurso `azfnd01` con los deployments, cluster de Qdrant, y las credenciales en tu `.env`.
-- Renovaste la API key de Qdrant cuando el RAG fallaba con 403.
-- Decidiste cambiar el checkpointer de SQLite a Azure SQL.
-
-✍️ **Completa tú:** cambios que hiciste directamente en el código, en los datos o en las reglas (por ejemplo, ajustes a políticas, parámetros, nombres de deployments o textos), y qué entendiste antes de aceptarlos.
+- **Definí el stack:** Azure SQL, Azure AI Foundry y Qdrant, y aporté los recursos reales (servidor y base de Azure SQL, el recurso `azfnd01` con sus deployments, el cluster de Qdrant) y sus credenciales en mi `.env`.
+- **Cambié una decisión de diseño:** el asistente planteó el checkpoint en SQLite; yo pedí pasarlo a Azure SQL para que todo quede en Azure.
+- **Corregí mi configuración** cuando falló: el endpoint de Foundry (usé el del recurso y no el del proyecto) y la API key de Qdrant, que daba 403.
+- **Pedí validar contra servicios reales**, no solo con pruebas: ejecutar todos los casos para comprobar Azure SQL, Qdrant y Foundry.
+- **Los cambios de código los hizo el asistente** a partir de mis pedidos y de los fallos que encontramos al ejecutar. Yo los revisé en las ejecuciones, en las pruebas y en `DECISIONES.md`, para poder explicarlos en el video.
 
 ## 5. Una sugerencia rechazada y por qué
 
-- **Checkpointer SQLite (`SqliteSaver`).** La IA lo propuso por simplicidad (archivo local, sin infraestructura) y porque el diseño original lo mencionaba. Lo rechazaste con *"No uses sqlite, usa azure sql"*. Razón técnica: un archivo local no sirve si el agente corre en varias instancias o en contenedores efímeros, y el estado pausado se perdería. Resultado: `AzureSqlSaver` (D5 en `DECISIONES.md`).
-- ✍️ Añade otra si la hubo (por ejemplo, el comando de diagnóstico del entorno que no autorizaste al inicio) y por qué la rechazaste.
+- **Checkpointer SQLite (`SqliteSaver`).** El asistente lo usó por simplicidad: un archivo local, sin infraestructura. Lo rechacé con *"No uses sqlite, usa azure sql"*. La razón técnica es que un archivo local no sirve si el agente corre en varias instancias o en contenedores efímeros: el estado de un hilo pausado se perdería y no podría reanudar. El resultado fue `AzureSqlSaver` (decisión D5 en `DECISIONES.md`).
 
-## 6. Errores de la IA detectados
+## 6. Errores de la IA que detecté
 
 | # | Error de la IA | Cómo se detectó | Corrección |
 |---|---|---|---|
-| 1 | Columna `checkpoint` en `04_checkpoints.sql`: palabra reservada de T-SQL | Al ejecutar el script en Azure SQL (`Incorrect syntax near 'checkpoint'`) | `[checkpoint]` en SQL y en consultas dinámicas |
-| 2 | `mcp>=1.10` sin tope: un `uv sync` limpio instala mcp 2.x y rompe el servidor | `uv run andes-mcp-cliente` falló con `No module named 'mcp.server.fastmcp'` | `mcp>=1.10,<2` y `uv.lock` |
-| 3 | Asumió el deployment `gpt-4o-mini` y `temperature=0` | Error 404 `DeploymentNotFound` y luego el rechazo de `temperature` por un modelo de razonamiento | Deployment `gpt-5-mini` (verificado con `az`) y sin `temperature` |
-| 4 | Router con reglas "seguras y equivocadas" y verbos incompletos | Al probar frases nuevas (EVIDENCIAS §3) | Reordenar reglas, ampliar verbos y pruebas de regresión |
-| 5 | `ejecutar` permitía reutilizar un `id_hilo` y mezclaba estados | Trazas y advertencias duplicadas en una corrida real | Rechazar hilos existentes |
+| 1 | Usó `checkpoint` como nombre de columna en `04_checkpoints.sql`, que es palabra reservada de T-SQL | Al ejecutar el script en mi Azure SQL: `Incorrect syntax near 'checkpoint'` | `[checkpoint]` en el SQL y en las consultas dinámicas |
+| 2 | Dejó `mcp>=1.10` sin tope: un `uv sync` limpio instala mcp 2.x y el servidor no arranca | `uv run andes-mcp-cliente` falló con `No module named 'mcp.server.fastmcp'` | `mcp>=1.10,<2` y `uv.lock` regenerado |
+| 3 | Asumió el deployment `gpt-4o-mini` y `temperature=0` | Error 404 `DeploymentNotFound`; luego el modelo de razonamiento rechazó `temperature` | Deployment `gpt-5-mini` (comprobado con `az`) y sin `temperature` |
+| 4 | El router tenía reglas "seguras y equivocadas" y le faltaban verbos | Al probar frases nuevas (`EVIDENCIAS.md` §3) | Reordenar reglas, ampliar verbos y pruebas de regresión |
+| 5 | `ejecutar` permitía reutilizar un `id_hilo` y mezclaba estados | Trazas y advertencias duplicadas en una corrida real | `ejecutar` rechaza hilos existentes |
 
-## 7. Cómo se validó antes de confiar
+Varios de estos errores (1, 3 y el 403 de Qdrant) solo aparecieron al ejecutar contra los servicios reales; las pruebas con simulaciones no los habrían detectado.
 
-- **Pruebas automáticas:** `uv run pytest` (55 pruebas) y regresiones para cada error corregido.
-- **Ejecución real:** cada pieza se ejecutó contra Azure SQL, Foundry y Qdrant, no solo con simulaciones (EVIDENCIAS §4–7).
-- **Verificación independiente:** `az cognitiveservices account deployment list` para los deployments; consultas SQL directas para comprobar liberaciones y checkpoints; escaneo para confirmar que ningún secreto del `.env` aparece en el código.
-- **Lectura del código y de las reglas:** las decisiones de negocio están en `reglas.py` (determinista); el LLM no controla ramas críticas.
-- ✍️ **Completa tú:** qué revisaste personalmente y qué pudiste explicar sin ayuda (para el video).
+## 7. Cómo validé antes de confiar
+
+- **Pruebas automáticas:** `uv run pytest` (55 pruebas), con una prueba de regresión por cada error corregido.
+- **Ejecución real:** corrí cada pieza contra Azure SQL, Foundry y Qdrant (`EVIDENCIAS.md` §4–7), incluida la pausa y reanudación con el mismo `id_hilo`.
+- **Verificación independiente:** `az cognitiveservices account deployment list` para los deployments, consultas SQL directas para comprobar liberaciones y checkpoints, y un escaneo para confirmar que ningún secreto de mi `.env` aparece en el código ni en el repositorio.
+- **Lectura de las reglas de negocio:** la decisión de crédito está en `reglas.py` (determinista). El LLM no controla ramas críticas: solo enruta con validación posterior y redacta.
+- **Comprensión:** repasé el `CHECKLIST.md` contra el PDF y preparé `GUIA_EXPOSICION.md` con respuestas a las preguntas de control para poder explicar el sistema en el video.
