@@ -38,7 +38,9 @@ SISTEMA_REDACTOR = (
     "- aprobador: el nombre en aprobacion.aprobador; null si no hay aprobacion.\n"
     "- monto: el monto del JSON.\n"
     "- mensaje: 2 a 3 líneas en español que digan claramente el estado (liberada, rechazada, pendiente, "
-    "'no liberable' o 'no se puede evaluar'), el monto, el aprobador si existe y los motivos."
+    "'no liberable' o 'no se puede evaluar'), el monto, el aprobador si existe y los motivos. "
+    "Escribe en lenguaje natural: nunca uses 'null' ni '[]' (si no hay aprobador humano o motivos, no los menciones "
+    "o di 'sin aprobación humana')."
 )
 
 # Palabras que el mensaje debe contener para ser coherente con el estado declarado.

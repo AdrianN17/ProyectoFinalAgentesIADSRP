@@ -115,6 +115,7 @@ def construir_grafo(
         evidencia: dict[str, Any] = {}
         if plan:
             print(f"    · [consultar_fuentes] tools: {', '.join(nombre for nombre, _ in plan.values())}")
+            print(f"    · [consultar_fuentes] canal de acceso: {getattr(deps.fuentes, 'via', 'desconocido')}")
             resultados = deps.fuentes.llamar(list(plan.values()))
             evidencia = dict(zip(plan.keys(), resultados))
         advertencias: list[str] = []

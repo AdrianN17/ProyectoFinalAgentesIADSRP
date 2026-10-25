@@ -187,11 +187,12 @@ Esperado: lista de 4 tools (`consultar_stock`, `consultar_estado_credito`, `cons
 uv run andes-demo ejecutar --hilo M1 "C-1001 pide 3 EDGE-ORIN a crédito"
 ```
 
-En la salida busca las líneas `INFO:mcp.server.lowlevel.server:Processing request of type CallToolRequest` (una por tool) y `Fuentes: azure_sql:...`. Opcional, para contrastar con el acceso directo sin MCP:
+En la salida busca la línea `[consultar_fuentes] canal de acceso: servidor MCP (subproceso por stdio, solo lectura)` y las líneas `INFO:mcp.server.lowlevel.server:Processing request of type CallToolRequest` (una por tool), además de `Fuentes: azure_sql:...`. Opcional, para contrastar con el acceso directo sin MCP:
 
 ```powershell
 uv run andes-demo ejecutar --hilo M2 --directo "C-1001 pide 2 EDGE-ORIN a crédito"
 ```
+Con `--directo` la línea dice `canal de acceso: ACCESO DIRECTO a Azure SQL (sin MCP, sin subproceso)` y no aparece ninguna `CallToolRequest`.
 
 **Explica:** *"Antes de MCP, cada aplicación tenía su propio acceso a la base y quedaba atada al esquema. Ahora hay un contrato único, de solo lectura, sobre vistas. No expongo `ejecutar_sql`: sería SQL libre. Tampoco expongo aprobar ventas ni modificar límites. Un Resource informa, no autoriza."*
 

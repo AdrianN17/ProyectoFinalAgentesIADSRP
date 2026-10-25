@@ -16,6 +16,8 @@ class Fuentes(Protocol):
 
 
 class DbFuentes:
+    via = "ACCESO DIRECTO a Azure SQL (sin MCP, sin subproceso)"
+
     def __init__(self, repo: Repositorio):
         self.repo = repo
 
@@ -24,6 +26,8 @@ class DbFuentes:
 
 
 class McpFuentes:
+    via = "servidor MCP (subproceso por stdio, solo lectura)"
+
     def llamar(self, llamadas: list[Llamada]) -> list[dict[str, Any]]:
         try:
             return asyncio.run(llamar_herramientas(llamadas))
@@ -38,6 +42,10 @@ class FuentesConFallos:
 
     def __init__(self, interno: Fuentes, fallos: int):
         self.interno, self.pendientes = interno, fallos
+
+    @property
+    def via(self) -> str:
+        return getattr(self.interno, "via", "desconocido")
 
     def llamar(self, llamadas: list[Llamada]) -> list[dict[str, Any]]:
         if self.pendientes > 0:
