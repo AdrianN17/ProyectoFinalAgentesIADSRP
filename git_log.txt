@@ -1,4 +1,33 @@
-﻿commit 224d9b472c95c76cb647f8f59b5c85dd553bcefb
+﻿commit 7197f9ff4331fc7f8c249ddc36602a3ec29bbbec
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-25 15:17:32 -0500
+
+    Conexión a Azure SQL: reintento con espera cuando la base serverless está reanudando, y revalidación del checklist
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ CHECKLIST.md          | 60 ++++++++++++++++++++++++++++++++++++++++++++-------
+ EVIDENCIAS.md         |  5 +++--
+ GUIA_EXPOSICION.md    |  8 +++----
+ HITOS.md              |  2 +-
+ README.md             |  2 +-
+ USO_IA.md             |  2 +-
+ src/andes_agent/db.py | 32 +++++++++++++++++++++++++--
+ tests/test_sql.py     | 57 +++++++++++++++++++++++++++++++++++++++++++++++-
+ 8 files changed, 148 insertions(+), 20 deletions(-)
+
+commit be124a92d495326b2075335b68b2948c62555b5f
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-25 14:44:54 -0500
+
+    Actualiza git_log.txt
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ git_log.txt | 24 +++++++++++++++++++++++-
+ 1 file changed, 23 insertions(+), 1 deletion(-)
+
+commit 224d9b472c95c76cb647f8f59b5c85dd553bcefb
 Author: Adrian N <adriannor12@hotmail.com>
 Date:   2026-10-25 14:44:53 -0500
 
