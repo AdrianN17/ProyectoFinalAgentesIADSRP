@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import struct
+import sys
+import time
 from contextlib import contextmanager
 from datetime import date, datetime
 from decimal import Decimal
@@ -17,6 +19,32 @@ ALCANCE_SQL = "https://database.windows.net/.default"
 SQL_COPT_SS_ACCESS_TOKEN = 1256
 _credencial: DefaultAzureCredential | None = None
 
+# Azure SQL serverless se pausa por inactividad (aquí a los 60 min): la primera conexión falla mientras reanuda.
+CODIGOS_BASE_REANUDANDO = ("40613", "40197", "40501", "49918", "10928", "10929")
+INTENTOS_CONEXION = 6
+ESPERA_CONEXION_S = 10.0
+
+
+def _base_reanudando(e: Exception) -> bool:
+    texto = str(e).lower()
+    return (any(c in texto for c in CODIGOS_BASE_REANUDANDO)
+            or "not currently available" in texto or "timeout expired" in texto)
+
+
+def _abrir(*args: Any, **kwargs: Any) -> pyodbc.Connection:
+    """pyodbc.connect con espera y reintento solo cuando la base está despertando (error transitorio)."""
+    for intento in range(1, INTENTOS_CONEXION + 1):
+        try:
+            return pyodbc.connect(*args, **kwargs)
+        except (pyodbc.OperationalError, pyodbc.InterfaceError) as e:
+            if intento == INTENTOS_CONEXION or not _base_reanudando(e):
+                raise
+            # stderr: el servidor MCP usa stdout para el protocolo
+            print(f"  [Azure SQL] la base está reanudando (intento {intento}/{INTENTOS_CONEXION}), "
+                  f"reintento en {ESPERA_CONEXION_S:.0f} s...", file=sys.stderr, flush=True)
+            time.sleep(ESPERA_CONEXION_S)
+    raise AssertionError("inalcanzable")
+
 
 def conectar(s: Settings | None = None, autocommit: bool = False) -> pyodbc.Connection:
     s = s or get_settings()
@@ -27,13 +55,13 @@ def conectar(s: Settings | None = None, autocommit: bool = False) -> pyodbc.Conn
         "Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;"
     )
     if s.sql_auth == "sql":
-        return pyodbc.connect(base + f"Uid={s.sql_user};Pwd={s.sql_password};", autocommit=autocommit)
+        return _abrir(base + f"Uid={s.sql_user};Pwd={s.sql_password};", autocommit=autocommit)
 
     global _credencial
     _credencial = _credencial or DefaultAzureCredential()
     token = _credencial.get_token(ALCANCE_SQL).token.encode("utf-16-le")
     empaquetado = struct.pack(f"<I{len(token)}s", len(token), token)
-    return pyodbc.connect(base, attrs_before={SQL_COPT_SS_ACCESS_TOKEN: empaquetado}, autocommit=autocommit)
+    return _abrir(base, attrs_before={SQL_COPT_SS_ACCESS_TOKEN: empaquetado}, autocommit=autocommit)
 
 
 def _valor(v: Any) -> Any:

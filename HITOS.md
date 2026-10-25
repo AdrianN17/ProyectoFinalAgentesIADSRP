@@ -130,4 +130,4 @@ Fijé `mcp>=1.10,<2` y regeneré `uv.lock`.
 **Qué decisión cambió después de probar**
 La respuesta final la redacta Foundry con salida estructurada (`estado`, `aprobador`, `monto`, `mensaje`) y el código la valida contra los hechos; si no coincide, se usa la plantilla.
 
-**Evidencia:** `uv run pytest` (74 pruebas), las ejecuciones del 2026-10-24, `git_log.txt` y el video (`VIDEO_LINK.txt`).
+**Evidencia:** `uv run pytest` (77 pruebas), las ejecuciones del 2026-10-24 y 2026-10-25, `git_log.txt` y el video (`VIDEO_LINK.txt`).

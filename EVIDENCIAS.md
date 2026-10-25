@@ -17,14 +17,14 @@ Se imprimen al inicio de cada `ejecutar` y `andes-init-db` los aplica a Azure SQ
 
 ## 2. Pruebas
 
-`uv run pytest -q` → **74 passed**.
+`uv run pytest -q` → **77 passed**.
 
 | Archivo | Pruebas | Cubre |
 |---|---|---|
 | `test_reglas.py` | 6 | línea insuficiente, hold, monto de revisión, venta sana, stock, datos inválidos |
 | `test_router.py` | 19 | **14 casos de evaluación del router** + semilla + parser + 3 con LLM simulado |
 | `test_rag.py` | 3 | cita fuente y sección, plazos de entrega, consulta sin relación bajo umbral |
-| `test_sql.py` | 4 | **3 consultas SQL** parametrizadas + despacho cerrado |
+| `test_sql.py` | 7 | **3 consultas SQL** parametrizadas + despacho cerrado + **reintento de conexión cuando la base serverless despierta** (3 pruebas) |
 | `test_grafo.py` | 11 | directa, HITL, aprobar, rechazar, otro `id_hilo`, retry, regla sin retry, cliente inexistente, ambigua, **no usar RAG**, **RAG con cita** |
 | `test_mcp.py` | 5 | `list_tools`, `call_tool`, `read_resource` por stdio real sin LLM; entrada inválida; **agente con consulta compuesta** |
 | `test_redactor.py` | 19 | **redactor con salida estructurada**: respuesta válida, estado/aprobador/monto incorrectos, mensaje que omite la aprobación (el caso real que falló), fallo del LLM → plantilla |
@@ -137,6 +137,7 @@ El agente usa el mismo servidor: una liberación genera **4** `CallToolRequest` 
 | 8 | El retry funcionaba pero no se veía | Sin salida por intento | Mensajes por cada fallo simulado y recuperación |
 | 9 | Dos errores del router (sección 3) | Orden de reglas y lista de verbos incompleta | Ajuste + pruebas de regresión |
 | 10 | El redactor LLM omitió la aprobación en la respuesta ("Decisión: excepción") aunque la decisión y el registro eran correctos | Ejecución real de `reanudar` | Salida estructurada (`estado`, `aprobador`, `monto`, `mensaje`) validada por código; si no coincide, se usa la plantilla. Validado con el modelo real: 30/30 respuestas aceptadas (6 escenarios × 5 repeticiones) |
+| 11 | El primer comando tras un rato de inactividad falló (5 de 23 comprobaciones en la revalidación del 2026-10-25) | La base de Azure SQL es serverless con pausa automática a los 60 min (`az sql db show`: `autoPauseDelay: 60`): la primera conexión falla mientras la base despierta | `conectar` reintenta hasta 6 veces con 10 s de espera, solo ante los errores de "base reanudando" (40613, 40197, 40501, 49918, 10928, 10929) y avisa por stderr. Un error de credenciales no se reintenta. 3 pruebas nuevas. Revalidación: 23/23 |
 
 ## 9. Cambio de decisión después de probar
 - **SQLite → Azure SQL para checkpoints.** El diseño inicial usaba `SqliteSaver`; se cambió a `AzureSqlSaver` para que el estado pausado no dependa de un archivo local (D5 en `DECISIONES.md`).

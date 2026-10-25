@@ -34,7 +34,7 @@ uv run andes-mcp-cliente                                               # cliente
 
 ## Pruebas
 ```powershell
-uv run pytest        # 74 pruebas; no requieren Azure ni Qdrant (conexiones simuladas, Qdrant en memoria, servidor MCP de prueba por stdio)
+uv run pytest        # 77 pruebas; no requieren Azure ni Qdrant (conexiones simuladas, Qdrant en memoria, servidor MCP de prueba por stdio)
 ```
 
 ## Estructura

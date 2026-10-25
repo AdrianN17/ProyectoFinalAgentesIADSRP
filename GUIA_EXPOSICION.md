@@ -16,8 +16,8 @@ $env:PYTHONIOENCODING = "utf-8"
 $env:UV_PYTHON = (Get-Command python).Source
 
 uv sync --extra dev                      # dependencias (debe decir "Checked ... packages")
-uv run pytest -q                         # esperado: 38 passed
-uv run andes-init-db --limpiar-demo      # borra hilos y liberaciones de pruebas anteriores
+uv run andes-init-db --limpiar-demo      # CALIENTA la base (serverless, se pausa tras 60 min) y borra hilos y liberaciones previos
+uv run pytest -q                         # esperado: 77 passed
 ```
 
 Comprobaciones rápidas (todas deben funcionar):
@@ -36,7 +36,7 @@ Después de las pruebas, vuelve a limpiar: `uv run andes-init-db --limpiar-demo`
 - Letra grande en la terminal; deja visibles `CRE-001` y `7885` (salen impresos al inicio de cada `ejecutar`).
 - Si algo falla, muéstralo y explícalo: el PDF prohíbe ocultar fallos.
 
-Si un comando demora, es normal: cada `ejecutar` consulta Azure SQL por MCP, Qdrant y Foundry (8–15 s).
+Si un comando demora, es normal: cada `ejecutar` consulta Azure SQL por MCP, Qdrant y Foundry (unos 20–30 s). Si ves `[Azure SQL] la base está reanudando`, la base estaba pausada: espera, reintenta sola (por eso conviene calentarla antes de grabar).
 
 ---
 
@@ -303,7 +303,7 @@ Dilo en este orden (30–45 s):
 | `Advertencias: RAG (Qdrant) no disponible` | Qdrant sin acceso (key inválida) o colección sin indexar: `uv run andes-index`. El flujo continúa; solo faltan las citas. |
 | `Advertencias: respuesta del LLM descartada (...)` | El validador rechazó lo que devolvió el modelo (estado, aprobador o monto no coinciden). Es el comportamiento esperado: se usó la plantilla del código. |
 | `Advertencias: ... LLM no disponible` | Foundry no responde: revisa `FOUNDRY_CHAT_DEPLOYMENT=gpt-5-mini` y el endpoint `https://azfnd01.openai.azure.com/`. La respuesta sale por plantilla. |
-| Error de conexión a Azure SQL | Revisa firewall del servidor (tu IP), que la base no esté pausada (serverless tarda en despertar) y reintenta. |
+| Error de conexión a Azure SQL | Revisa el firewall del servidor (tu IP). La base es **serverless y se pausa tras 60 min sin uso**: la primera conexión tarda hasta ~1 min en despertar. El programa reintenta solo y avisa con `[Azure SQL] la base está reanudando (intento n/6)`. **Antes de grabar, calienta la base** con `uv run andes-init-db --limpiar-demo`. |
 | `ModuleNotFoundError: mcp.server.fastmcp` | Instaló mcp 2.x: `uv sync --extra dev` (el rango correcto es `mcp>=1.10,<2`). |
 | Caracteres raros (`Crédito`) | `chcp 65001` y `$env:PYTHONIOENCODING = "utf-8"`. |
 

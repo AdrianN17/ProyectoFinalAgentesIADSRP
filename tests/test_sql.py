@@ -3,7 +3,7 @@
 Lo que se verifica: cada consulta lleva los valores en `params` y nunca interpolados en el texto SQL.
 """
 import pytest
-
+import pyodbc
 from andes_agent import db as db_mod
 from andes_agent.db import Repositorio
 
@@ -83,3 +83,58 @@ def test_ejecutar_solo_permite_operaciones_conocidas(conexion_falsa):
     conexion_falsa([])
     with pytest.raises(KeyError):
         Repositorio().ejecutar("ejecutar_sql", {"sql": "SELECT * FROM ops.clientes"})
+
+
+# --- Azure SQL serverless: la primera conexión tras la pausa automática falla mientras reanuda ---
+
+class _Ajustes:
+    sql_server, sql_database, sql_auth = "srv.database.windows.net", "bd", "sql"
+    sql_user, sql_password, sql_driver = "u", "p", "ODBC Driver 18 for SQL Server"
+
+
+def _error_reanudando():
+    return pyodbc.OperationalError(
+        "08001", "[08001] Database 'bd' on server 'srv' is not currently available. (40613) (SQLDriverConnect)")
+
+
+def test_conexion_reintenta_mientras_la_base_reanuda(monkeypatch):
+    intentos, esperas = [], []
+
+    def conectar_falso(*args, **kwargs):
+        intentos.append(1)
+        if len(intentos) <= 2:
+            raise _error_reanudando()
+        return "CONEXION"
+
+    monkeypatch.setattr(db_mod.pyodbc, "connect", conectar_falso)
+    monkeypatch.setattr(db_mod.time, "sleep", esperas.append)
+    assert db_mod.conectar(_Ajustes()) == "CONEXION"
+    assert len(intentos) == 3 and esperas == [db_mod.ESPERA_CONEXION_S] * 2
+
+
+def test_conexion_no_reintenta_errores_que_no_son_transitorios(monkeypatch):
+    intentos = []
+
+    def conectar_falso(*args, **kwargs):
+        intentos.append(1)
+        raise pyodbc.OperationalError("28000", "[28000] Login failed for user 'u'. (18456)")
+
+    monkeypatch.setattr(db_mod.pyodbc, "connect", conectar_falso)
+    monkeypatch.setattr(db_mod.time, "sleep", lambda s: pytest.fail("no debe esperar"))
+    with pytest.raises(pyodbc.OperationalError):
+        db_mod.conectar(_Ajustes())
+    assert len(intentos) == 1  # credenciales malas: fallar rápido, no esperar 50 s
+
+
+def test_conexion_se_rinde_tras_agotar_los_intentos(monkeypatch):
+    intentos = []
+
+    def siempre_reanudando(*args, **kwargs):
+        intentos.append(1)
+        raise _error_reanudando()
+
+    monkeypatch.setattr(db_mod.pyodbc, "connect", siempre_reanudando)
+    monkeypatch.setattr(db_mod.time, "sleep", lambda s: None)
+    with pytest.raises(pyodbc.OperationalError):
+        db_mod.conectar(_Ajustes())
+    assert len(intentos) == db_mod.INTENTOS_CONEXION

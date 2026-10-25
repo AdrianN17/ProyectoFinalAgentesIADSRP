@@ -1,6 +1,6 @@
 # CHECKLIST · AI Operations Agent · CRE-001 (Crédito) · semilla 7885
 
-> Validado el 2026-10-24 contra el proyecto `melgarejo_adrian_modulo3/` y la ejecución real sobre Azure SQL, Azure AI Foundry y Qdrant Cloud.
+> Revalidado el 2026-10-25 contra el proyecto `melgarejo_adrian_modulo3/`, con 23 comprobaciones en vivo sobre Azure SQL, Azure AI Foundry y Qdrant Cloud (sección 0), un análisis estático del código y `uv run pytest`.
 > Fuente: `Modulo3_Proyecto_Final_DSRP.pdf` (secciones 7–17 y Anexo A).
 
 **Leyenda:** ✅ cumple y verificado · ⚠️ cumple parcialmente · ❌ falta · 🎬 depende de ti (video / tu autoría)
@@ -9,24 +9,68 @@
 
 | Bloque | Estado |
 |---|---|
-| Código y núcleo técnico (router, RAG, SQL, tools, LangGraph, retry, checkpoint, HITL, MCP) | ✅ Funciona y se ejecutó de punta a punta |
-| Pruebas | ✅ 74 pasan; cubren todo lo que pide la sección 12 del PDF |
+| Código y núcleo técnico (router, RAG, SQL, tools, LangGraph, retry, checkpoint, HITL, MCP) | ✅ 23 de 23 comprobaciones en vivo |
+| Pruebas | ✅ 77 pasan; cubren todo lo que pide la sección 12 del PDF |
 | Entregables documentales (`HITOS`, `EVIDENCIAS`, `DECISIONES`, `USO_IA`, `docs/`) | ✅ Completos (los dos de proceso están en primera persona; repásalos antes de entregar) |
-| Git (≥ 4 commits, `git_log.txt`) | ✅ 6 commits (uno por hito) y `git_log.txt` |
+| Git (≥ 4 commits, `git_log.txt`) | ✅ Repositorio con 6 commits por hito más los de mejoras, y `git_log.txt` |
 | Video | 🎬 Pendiente (lo grabas tú) |
 
 **Topes de nota:** ya no hay ninguno activo salvo el video. `USO_IA.md` existe (evita −10) y está redactado en primera persona; antes de entregar, léelo y quita o ajusta cualquier frase que no refleje lo que realmente hiciste.
 
-> Los commits se agruparon **por hito después de construir** el proyecto: reflejan el orden y la estructura del trabajo, pero el contenido de cada archivo es el final. Si quieres commits que muestren evolución real, haz commits pequeños desde ahora (por ejemplo, el cambio del minuto 8:00 del video).
+> Los commits de los hitos se agruparon **por hito después de construir** el proyecto: reflejan el orden y la estructura del trabajo, pero el contenido de cada archivo es el final. Los commits posteriores (CLI, redactor, README, etc.) sí son cambios reales. Haz commits pequeños desde ahora (por ejemplo, el cambio del minuto 8:00 del video).
 
 ---
+
+## 0. Revalidación en vivo (2026-10-25)
+
+Cada fila se ejecutó con `uv run andes-demo` o `andes-mcp-cliente` y se comprobó automáticamente (PASS/FAIL) contra la salida real y, cuando aplica, contra las tablas de Azure SQL.
+
+| # | Comprobación | Resultado |
+|---|---|---|
+| 1 | Semilla `CRE-001` / `7885` y parámetros impresos al iniciar | ✅ |
+| 2 | Workflow se pausa con `interrupt()` (caso base) | ✅ |
+| 3 | Checkpoint persistente en Azure SQL | ✅ 6 checkpoints del hilo |
+| 4 | Reanudar con **otro** `id_hilo` no funciona | ✅ |
+| 5 | Reanudar con el **mismo** `id_hilo` (aprobar) libera | ✅ |
+| 6 | Idempotencia: la 2.ª reanudación no duplica | ✅ 1 fila en `ops.liberaciones` |
+| 7 | Regla de negocio (hold) bloquea **sin retry** | ✅ 0 reintentos |
+| 8 | Reanudación rechazada no registra liberación | ✅ |
+| 9 | Fallo técnico transitorio con retry (2 fallos y recupera) | ✅ |
+| 10 | Retry agotado (3 fallos) falla de forma visible | ✅ |
+| 11 | Agente consume MCP con consulta compuesta | ✅ 4 llamadas MCP |
+| 12 | Modo `--directo` no usa MCP (contraste) | ✅ 0 llamadas |
+| 13 | Cliente MCP puro: `list_tools` + `call_tool` + resource, sin LLM | ✅ |
+| 14 | RAG muestra fuentes (Qdrant) | ✅ |
+| 15 | Caso que decide **no** usar RAG (stock) | ✅ |
+| 16 | SQL: historial parametrizado | ✅ |
+| 17 | Router: caso sin ninguna tool (`DIRECT`) | ✅ |
+| 18 | Router con baja confianza → `CLARIFY` (con LLM) | ✅ |
+| 19 | Solicitud ambigua: aclara y no consulta fuentes | ✅ |
+| 20 | Cliente inexistente | ✅ |
+| 21 | SKU inexistente | ✅ |
+| 22 | Stock insuficiente (sin HITL) | ✅ |
+| 23 | `ejecutar` con hilo repetido se rechaza | ✅ |
+
+**Análisis estático del código** (sección 13 del PDF):
+
+| Restricción | Resultado |
+|---|---|
+| SQL parametrizado | ✅ Las 8 consultas de `db.py` son cadenas constantes con `?`. Las únicas f-strings con SQL están en `checkpointer.py` y solo insertan nombres de tablas y columnas fijos del código; el filtro de metadata valida sus claves |
+| Sin SQL libre del LLM ni expuesto | ✅ 4 tools (`consultar_*`) y 1 resource; ninguna con `sql` en el nombre; transporte `stdio` |
+| Retry solo para fallos transitorios | ✅ `retry_on=FalloTransitorio`, solo en el nodo `consultar_fuentes` |
+| Sin side effects antes de `interrupt()` | ✅ `aprobacion_humana` no escribe antes del `interrupt()` |
+| State pequeño | ✅ 15 campos, ninguno con secretos ni documentos completos |
+| Sin prompt gigante | ✅ Prompts de 521 y 932 caracteres |
+| Sin secretos | ✅ Ningún valor del `.env` aparece en los archivos versionados **ni en el historial de git**; `.env` no está versionado; `.env.example` sin valores sensibles |
+
+**Hallazgo de la revalidación:** en la primera pasada fallaron 5 comprobaciones, todas del primer comando tras un rato de inactividad. La causa es que la base de Azure SQL es *serverless* con pausa automática a los 60 minutos, y la primera conexión falla mientras la base despierta. Se corrigió: `conectar` reintenta hasta 6 veces con espera, solo ante ese tipo de error, y avisa por pantalla (EVIDENCIAS §8, error 11). Segunda pasada: **23/23**. Antes de grabar el video conviene calentar la base con `uv run andes-init-db --limpiar-demo`.
 
 ## 1. Checklist final del PDF (sección 17)
 
 | # | Ítem | Estado | Evidencia / qué falta |
 |---|---|---|---|
 | 1 | CASO_ID y SEMILLA reproducibles | ✅ | `config_caso.py`: `CRE-001` / `7885`, generador aislado `random.Random(7885)`. Test `test_semilla_reproducible`. Se imprimen al iniciar cada `ejecutar`. |
-| 2 | `uv sync` funciona | ✅ | Verificado: `uv sync --extra dev` (107 paquetes) y `uv run pytest` pasan. Se corrigió `mcp>=1.10,<2` (con mcp 2.x el servidor no arrancaba) y se regeneró `uv.lock`. |
+| 2 | `uv sync` funciona | ✅ | Verificado de nuevo: `uv lock --check`, `uv sync --extra dev --locked` (108 paquetes) y `uv run pytest` pasan. Se corrigió `mcp>=1.10,<2` (con mcp 2.x el servidor no arrancaba) y se regeneró `uv.lock`. |
 | 3 | README con comandos exactos | ✅ | [README.md](./README.md). Verificados: `uv run andes-demo`, `andes-mcp-cliente`, `andes-init-db`, `pytest`. |
 | 4 | `HITOS.md` con los 6 hitos | ✅ | Los 6 hitos con qué se construyó, qué falló, qué aprendiste, qué decisión cambió y evidencia (en primera persona). |
 | 5 | Router con 12 casos | ✅ | 14 casos de evaluación en `tests/test_router.py`, incluido uno donde la mejor acción es no usar ninguna tool. |
@@ -37,7 +81,7 @@
 | 10 | Regla de negocio sin retry demostrada | ✅ | Cliente en hold (C-1004) pausa a la primera, sin reintentos. Test `test_regla_de_negocio_no_se_reintenta`. |
 | 11 | MCP cliente puro funciona | ✅ | `uv run andes-mcp-cliente`: `list_tools` (4 tools), `call_tool` y `read_resource` contra Azure SQL. |
 | 12 | Agente consume MCP | ✅ | `andes-demo` usa `McpFuentes` por defecto (4 llamadas MCP por liberación). |
-| 13 | Tests ejecutables | ✅ | `uv run pytest` → 74 passed. |
+| 13 | Tests ejecutables | ✅ | `uv run pytest` → 77 passed. |
 | 14 | `DECISIONES.md` completo | ✅ | 8 decisiones con problema, alternativas, decisión, trade-off, riesgo y cambio en producción. |
 | 15 | `USO_IA.md` completo | ✅ | Herramientas, 3 prompts, qué generó la IA, qué decidiste tú, sugerencia rechazada, errores de IA y validación. |
 | 16 | `git_log.txt` incluido | ✅ | Repositorio con 6 commits y `git_log.txt`. |
@@ -71,7 +115,7 @@
 
 ## 3. Pruebas mínimas (sección 12)
 
-74 pruebas pasan (`uv run pytest`). Cobertura frente a lo exigido:
+77 pruebas pasan (`uv run pytest`). Cobertura frente a lo exigido:
 
 | Componente | Requerido | Estado | Detalle |
 |---|---|---|---|

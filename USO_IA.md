@@ -54,7 +54,7 @@ Varios de estos errores (1, 3 y el 403 de Qdrant) solo aparecieron al ejecutar c
 
 ## 7. Cómo validé antes de confiar
 
-- **Pruebas automáticas:** `uv run pytest` (74 pruebas), con una prueba de regresión por cada error corregido.
+- **Pruebas automáticas:** `uv run pytest` (77 pruebas), con una prueba de regresión por cada error corregido.
 - **Ejecución real:** corrí cada pieza contra Azure SQL, Foundry y Qdrant (`EVIDENCIAS.md` §4–7), incluida la pausa y reanudación con el mismo `id_hilo`.
 - **Verificación independiente:** `az cognitiveservices account deployment list` para los deployments, consultas SQL directas para comprobar liberaciones y checkpoints, y un escaneo para confirmar que ningún secreto de mi `.env` aparece en el código ni en el repositorio.
 - **Lectura de las reglas de negocio:** la decisión de crédito está en `reglas.py` (determinista). El LLM no controla ramas críticas: solo enruta con validación posterior y redacta.
