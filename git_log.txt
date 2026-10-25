@@ -1,4 +1,26 @@
-﻿commit 5f9ed4973312f76d607a86ef1e6954ac15b354a5
+﻿commit d8d340e52925c64f70d5696075a6a0ec909bed9f
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-25 18:26:36 -0500
+
+    Guía: procedimiento para reproducir en vivo el error del router
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ GUIA_EXPOSICION.md | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+commit ed1892a0635f88236d39748b99d2c696716edbaf
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-25 18:15:00 -0500
+
+    Actualiza git_log.txt
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ git_log.txt | 29 ++++++++++++++++++++++++++++-
+ 1 file changed, 28 insertions(+), 1 deletion(-)
+
+commit 5f9ed4973312f76d607a86ef1e6954ac15b354a5
 Author: Adrian N <adriannor12@hotmail.com>
 Date:   2026-10-25 18:15:00 -0500
 
