@@ -1,4 +1,26 @@
-﻿commit 9c8bf7dc4cb249ee3b3b4ce9929b5baff02e016e
+﻿commit d574a92ac8855fffc29f8e9b939b70253538bf67
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-25 09:54:59 -0500
+
+    Grafo: mensajes por nodo para seguir el recorrido en consola
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ src/andes_agent/graph.py | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+
+commit e71cdb5bf50a21cdbcf9078881fdff5e0269f66f
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-25 09:49:45 -0500
+
+    Actualiza git_log.txt
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ git_log.txt | 25 ++++++++++++++++++++++++-
+ 1 file changed, 24 insertions(+), 1 deletion(-)
+
+commit 9c8bf7dc4cb249ee3b3b4ce9929b5baff02e016e
 Author: Adrian N <adriannor12@hotmail.com>
 Date:   2026-10-25 09:49:45 -0500
 
