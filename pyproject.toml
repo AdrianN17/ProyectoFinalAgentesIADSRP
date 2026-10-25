@@ -1,0 +1,37 @@
+[project]
+name = "andes-agent"
+version = "0.1.0"
+description = "AI Operations Agent · CRE-001 (Crédito) · Azure AI Foundry + Azure SQL + Qdrant + LangGraph + MCP"
+requires-python = ">=3.11"
+dependencies = [
+    "langgraph>=0.6",
+    "mcp>=1.10,<2",
+    "openai>=1.99",
+    "azure-identity>=1.17",
+    "pyodbc>=5.1",
+    "qdrant-client>=1.12",
+    "pydantic>=2.7",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+monitor = ["azure-monitor-opentelemetry>=1.6"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+andes-init-db = "andes_agent.init_db:main"
+andes-index = "andes_agent.indexar_politicas:main"
+andes-demo = "andes_agent.demo:main"
+andes-mcp = "andes_agent.mcp_server:main"
+andes-mcp-cliente = "andes_agent.cliente_mcp_puro:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/andes_agent"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
