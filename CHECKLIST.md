@@ -10,7 +10,7 @@
 | Bloque | Estado |
 |---|---|
 | Código y núcleo técnico (router, RAG, SQL, tools, LangGraph, retry, checkpoint, HITL, MCP) | ✅ Funciona y se ejecutó de punta a punta |
-| Pruebas | ✅ 55 pasan; cubren todo lo que pide la sección 12 del PDF |
+| Pruebas | ✅ 74 pasan; cubren todo lo que pide la sección 12 del PDF |
 | Entregables documentales (`HITOS`, `EVIDENCIAS`, `DECISIONES`, `USO_IA`, `docs/`) | ✅ Completos (los dos de proceso están en primera persona; repásalos antes de entregar) |
 | Git (≥ 4 commits, `git_log.txt`) | ✅ 6 commits (uno por hito) y `git_log.txt` |
 | Video | 🎬 Pendiente (lo grabas tú) |
@@ -37,7 +37,7 @@
 | 10 | Regla de negocio sin retry demostrada | ✅ | Cliente en hold (C-1004) pausa a la primera, sin reintentos. Test `test_regla_de_negocio_no_se_reintenta`. |
 | 11 | MCP cliente puro funciona | ✅ | `uv run andes-mcp-cliente`: `list_tools` (4 tools), `call_tool` y `read_resource` contra Azure SQL. |
 | 12 | Agente consume MCP | ✅ | `andes-demo` usa `McpFuentes` por defecto (4 llamadas MCP por liberación). |
-| 13 | Tests ejecutables | ✅ | `uv run pytest` → 55 passed. |
+| 13 | Tests ejecutables | ✅ | `uv run pytest` → 74 passed. |
 | 14 | `DECISIONES.md` completo | ✅ | 8 decisiones con problema, alternativas, decisión, trade-off, riesgo y cambio en producción. |
 | 15 | `USO_IA.md` completo | ✅ | Herramientas, 3 prompts, qué generó la IA, qué decidiste tú, sugerencia rechazada, errores de IA y validación. |
 | 16 | `git_log.txt` incluido | ✅ | Repositorio con 6 commits y `git_log.txt`. |
@@ -71,7 +71,7 @@
 
 ## 3. Pruebas mínimas (sección 12)
 
-55 pruebas pasan (`uv run pytest`). Cobertura frente a lo exigido:
+74 pruebas pasan (`uv run pytest`). Cobertura frente a lo exigido:
 
 | Componente | Requerido | Estado | Detalle |
 |---|---|---|---|
@@ -126,7 +126,7 @@ Además hay pruebas propias: reglas (6), checkpointer (7) y semilla/parser.
 | No retries para reglas de negocio | ✅ | `retry_on=FalloTransitorio` solo. |
 | No guardar contexto innecesario en State | ⚠️ | Ver nota de `evidencia` en la sección 4 y en `docs/workflow_state.md`. |
 | No exponer más por MCP de lo necesario | ✅ | Solo lectura, sobre vistas; sin aprobar ni modificar. |
-| No usar outputs no validados en ramas críticas | ✅ | Las ramas críticas salen de `reglas.py`. La salida del router (LLM) se valida con Pydantic y con `_datos_completos`; el redactor solo produce texto. |
+| No usar outputs no validados en ramas críticas | ✅ | Las ramas críticas salen de `reglas.py`. La salida del router (LLM) se valida con Pydantic y con `_datos_completos`; la del redactor se valida contra los hechos (`validar_respuesta`) y, si no coincide, se descarta. |
 
 ---
 
@@ -174,7 +174,7 @@ Además hay pruebas propias: reglas (6), checkpointer (7) y semilla/parser.
 ## 8. Observaciones de diseño a tener presentes (para responder en el video)
 
 - **Se usó Azure SQL, Qdrant Cloud y checkpointer en Azure SQL.** El PDF los lista como *extensiones* (base remota, vector DB externa, persistencia externa). Está bien, pero el núcleo debe poder defenderse: ¿por qué Qdrant en vez de RAG local? ¿qué pasa si Qdrant cae? (el flujo degrada con una advertencia: la política cita, no decide).
-- **El redactor LLM puede introducir ruido** (p. ej. líneas como "Aprobación: (vacía)" o repetir la frase base). No controla ramas ni decisiones, pero es una limitación a reconocer; con `USE_LLM=false` la respuesta es 100 % por plantilla y reproducible.
+- **El redactor LLM ya no puede omitir ni contradecir la decisión.** Devuelve una estructura (`estado`, `aprobador`, `monto`, `mensaje`) que el código valida contra los hechos reales; si no coincide, se usa la plantilla y aparece una advertencia (D8). Aun así, es probabilístico: la redacción varía entre ejecuciones; con `USE_LLM=false` la respuesta es 100 % por plantilla y reproducible.
 - **El checkpointer `AzureSqlSaver` es propio** (no existe uno oficial para Azure SQL). Probado en Azure SQL real; el riesgo es que no recibe las pruebas de la comunidad que sí tienen los oficiales.
 - **Autenticación SQL con usuario y contraseña** (`AZURE_SQL_AUTH=sql`): en producción usarías Microsoft Entra ID / identidad administrada (`AZURE_SQL_AUTH=entra`). Además la contraseña actual es débil y se compartió en una conversación: cámbiala.
 

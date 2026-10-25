@@ -50,7 +50,7 @@ flowchart TB
 | Router | **Semántica** | Reglas primero; Foundry solo con confianza < 0.6, con salida validada (Pydantic) y comprobación de datos completos. |
 | LangGraph | **Proceso** | qué nodo sigue, qué estado persiste, pausa y reanudación. |
 | MCP | **Integración** | stock, crédito, historial y política como capacidades reutilizables y de solo lectura. |
-| Redactor (Foundry) | Probabilístico | solo redacta el texto; no controla ramas ni decisiones. |
+| Redactor (Foundry) | Probabilístico | redacta el mensaje de las liberaciones con salida estructurada; el código valida estado, aprobador y monto y, si no coinciden, usa la plantilla. No controla ramas ni decisiones. |
 
 ## 3. Antes / después de MCP
 

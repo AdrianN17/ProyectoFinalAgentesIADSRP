@@ -17,7 +17,7 @@ Se imprimen al inicio de cada `ejecutar` y `andes-init-db` los aplica a Azure SQ
 
 ## 2. Pruebas
 
-`uv run pytest -q` → **55 passed**.
+`uv run pytest -q` → **74 passed**.
 
 | Archivo | Pruebas | Cubre |
 |---|---|---|
@@ -27,6 +27,7 @@ Se imprimen al inicio de cada `ejecutar` y `andes-init-db` los aplica a Azure SQ
 | `test_sql.py` | 4 | **3 consultas SQL** parametrizadas + despacho cerrado |
 | `test_grafo.py` | 11 | directa, HITL, aprobar, rechazar, otro `id_hilo`, retry, regla sin retry, cliente inexistente, ambigua, **no usar RAG**, **RAG con cita** |
 | `test_mcp.py` | 5 | `list_tools`, `call_tool`, `read_resource` por stdio real sin LLM; entrada inválida; **agente con consulta compuesta** |
+| `test_redactor.py` | 19 | **redactor con salida estructurada**: respuesta válida, estado/aprobador/monto incorrectos, mensaje que omite la aprobación (el caso real que falló), fallo del LLM → plantilla |
 | `test_checkpointer.py` | 7 | filtros SQL, pausa/reanuda con otra instancia, historial, borrado |
 
 ## 3. Router (Hito 2)
@@ -135,6 +136,7 @@ El agente usa el mismo servidor: una liberación genera **4** `CallToolRequest` 
 | 7 | Trazas y advertencias duplicadas | `ejecutar` sobre un `id_hilo` existente mezclaba el estado anterior | `ejecutar` rechaza hilos existentes |
 | 8 | El retry funcionaba pero no se veía | Sin salida por intento | Mensajes por cada fallo simulado y recuperación |
 | 9 | Dos errores del router (sección 3) | Orden de reglas y lista de verbos incompleta | Ajuste + pruebas de regresión |
+| 10 | El redactor LLM omitió la aprobación en la respuesta ("Decisión: excepción") aunque la decisión y el registro eran correctos | Ejecución real de `reanudar` | Salida estructurada (`estado`, `aprobador`, `monto`, `mensaje`) validada por código; si no coincide, se usa la plantilla. Validado con el modelo real: 30/30 respuestas aceptadas (6 escenarios × 5 repeticiones) |
 
 ## 9. Cambio de decisión después de probar
 - **SQLite → Azure SQL para checkpoints.** El diseño inicial usaba `SqliteSaver`; se cambió a `AzureSqlSaver` para que el estado pausado no dependa de un archivo local (D5 en `DECISIONES.md`).

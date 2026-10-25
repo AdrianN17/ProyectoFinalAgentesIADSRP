@@ -67,11 +67,11 @@ Ocho decisiones de diseño. Cada una indica el problema, las alternativas, la de
 - **Riesgo:** clasificar mal un error (por ejemplo, un timeout de lógica de negocio).
 - **En producción:** backoff exponencial con *jitter*, *circuit breaker* y métricas de reintentos en Application Insights.
 
-## D8 · Redactor LLM opcional, con plantilla como respaldo
+## D8 · Redactor LLM con salida estructurada validada por código
 
-- **Problema:** respuestas legibles sin que el LLM invente cifras ni altere decisiones.
-- **Alternativas:** solo plantilla; solo LLM; plantilla + LLM que reformula.
-- **Decisión:** la respuesta base se construye por código (con cifras, fuentes, advertencias y trazabilidad) y, si `USE_LLM=true`, `gpt-5-mini` la reformula con instrucciones de usar solo esos hechos. Si Foundry falla, se entrega la plantilla con una advertencia. El redactor **no controla ramas**.
-- **Trade-off:** respuestas más naturales a cambio de ruido (se observó "Aprobación: (vacía)" y frases repetidas) y de no ser idénticas entre ejecuciones.
-- **Riesgo:** que el texto reformulado contradiga la decisión. Mitigación: la trazabilidad y las fuentes se añaden por código y la decisión es la del JSON.
-- **En producción:** validar que el texto final contenga la decisión y las cifras de entrada (o usar plantilla pura para el canal de decisión y LLM solo para comentarios).
+- **Problema:** respuestas legibles sin que el LLM invente cifras, omita la decisión o la altere. Observado en una ejecución real: tras una aprobación, el texto reformulado decía solo "Decisión: excepción" y omitía "liberada tras aprobación de Ana (Finanzas)".
+- **Alternativas:** (a) solo plantilla; (b) LLM reformula texto libre; (c) LLM devuelve una **estructura** (`estado`, `aprobador`, `monto`, `mensaje`) y el código la valida; (d) LLM solo escribe una nota breve y los hechos van siempre por código.
+- **Decisión:** (c). Para las liberaciones, `gpt-5-mini` responde con un esquema Pydantic (`RespuestaLiberacion`, con `estado` de lista cerrada) y `validar_respuesta` lo compara con los hechos reales: el estado debe coincidir con la decisión del código, el aprobador y el monto con los del State, y el mensaje debe expresar el estado, nombrar al aprobador e incluir el monto. Si algo no coincide, o el LLM falla, se usa la plantilla del código y se registra una advertencia con el motivo. El id de la liberación lo agrega el código. Las consultas informativas (stock, crédito, historial, política) ya no pasan por el LLM: usan la plantilla.
+- **Trade-off:** más código y una llamada estructurada por liberación, a cambio de que el LLM no pueda contradecir ni omitir la decisión. Una respuesta válida pero con redacción mejorable se acepta; una incorrecta se descarta.
+- **Riesgo:** la estructura garantiza la forma, no la verdad; la validación cubre estado, aprobador, monto y coherencia del mensaje, pero no el resto del texto (por ejemplo, los motivos redactados). Con el modelo real se aceptaron 30 de 30 respuestas de prueba (6 escenarios × 5 repeticiones).
+- **En producción:** medir la tasa de descarte, y si la redacción no aporta valor, usar solo la plantilla (opción (d) o `USE_LLM=false`) para el canal de decisiones.

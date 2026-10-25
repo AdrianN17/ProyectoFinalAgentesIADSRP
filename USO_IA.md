@@ -48,12 +48,13 @@ Después pedí *"Puedes agregar lo que falta del checklist"* y *"ejecuta todos l
 | 3 | Asumió el deployment `gpt-4o-mini` y `temperature=0` | Error 404 `DeploymentNotFound`; luego el modelo de razonamiento rechazó `temperature` | Deployment `gpt-5-mini` (comprobado con `az`) y sin `temperature` |
 | 4 | El router tenía reglas "seguras y equivocadas" y le faltaban verbos | Al probar frases nuevas (`EVIDENCIAS.md` §3) | Reordenar reglas, ampliar verbos y pruebas de regresión |
 | 5 | `ejecutar` permitía reutilizar un `id_hilo` y mezclaba estados | Trazas y advertencias duplicadas en una corrida real | `ejecutar` rechaza hilos existentes |
+| 6 | El redactor con LLM en texto libre omitió la aprobación en la respuesta ("Decisión: excepción") | Al ejecutar `reanudar` en una corrida real | Salida estructurada validada por código (D8); 30/30 respuestas aceptadas con el modelo real |
 
 Varios de estos errores (1, 3 y el 403 de Qdrant) solo aparecieron al ejecutar contra los servicios reales; las pruebas con simulaciones no los habrían detectado.
 
 ## 7. Cómo validé antes de confiar
 
-- **Pruebas automáticas:** `uv run pytest` (55 pruebas), con una prueba de regresión por cada error corregido.
+- **Pruebas automáticas:** `uv run pytest` (74 pruebas), con una prueba de regresión por cada error corregido.
 - **Ejecución real:** corrí cada pieza contra Azure SQL, Foundry y Qdrant (`EVIDENCIAS.md` §4–7), incluida la pausa y reanudación con el mismo `id_hilo`.
 - **Verificación independiente:** `az cognitiveservices account deployment list` para los deployments, consultas SQL directas para comprobar liberaciones y checkpoints, y un escaneo para confirmar que ningún secreto de mi `.env` aparece en el código ni en el repositorio.
 - **Lectura de las reglas de negocio:** la decisión de crédito está en `reglas.py` (determinista). El LLM no controla ramas críticas: solo enruta con validación posterior y redacta.

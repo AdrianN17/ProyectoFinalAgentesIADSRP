@@ -301,7 +301,8 @@ Dilo en este orden (30–45 s):
 |---|---|
 | `El hilo 'X' ya existe` | Usaste un `--hilo` repetido. Cambia el nombre o `uv run andes-init-db --limpiar-demo`. |
 | `Advertencias: RAG (Qdrant) no disponible` | Qdrant sin acceso (key inválida) o colección sin indexar: `uv run andes-index`. El flujo continúa; solo faltan las citas. |
-| `Advertencias: redactor LLM no disponible` | Foundry no responde: revisa `FOUNDRY_CHAT_DEPLOYMENT=gpt-5-mini` y el endpoint `https://azfnd01.openai.azure.com/`. La respuesta sale por plantilla. |
+| `Advertencias: respuesta del LLM descartada (...)` | El validador rechazó lo que devolvió el modelo (estado, aprobador o monto no coinciden). Es el comportamiento esperado: se usó la plantilla del código. |
+| `Advertencias: ... LLM no disponible` | Foundry no responde: revisa `FOUNDRY_CHAT_DEPLOYMENT=gpt-5-mini` y el endpoint `https://azfnd01.openai.azure.com/`. La respuesta sale por plantilla. |
 | Error de conexión a Azure SQL | Revisa firewall del servidor (tu IP), que la base no esté pausada (serverless tarda en despertar) y reintenta. |
 | `ModuleNotFoundError: mcp.server.fastmcp` | Instaló mcp 2.x: `uv sync --extra dev` (el rango correcto es `mcp>=1.10,<2`). |
 | Caracteres raros (`Crédito`) | `chcp 65001` y `$env:PYTHONIOENCODING = "utf-8"`. |

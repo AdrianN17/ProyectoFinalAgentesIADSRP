@@ -119,7 +119,7 @@ Fijé `mcp>=1.10,<2` y regeneré `uv.lock`.
 - `README.md`, `CHECKLIST.md`, `GUIA_EXPOSICION.md`, `DECISIONES.md`, `EVIDENCIAS.md` y `USO_IA.md`.
 
 **Qué falló**
-- Las respuestas del redactor con LLM añaden algo de ruido (por ejemplo "Aprobación: (vacía)") y no son idénticas entre ejecuciones.
+- En una ejecución, el redactor con LLM omitió la aprobación en el texto de la respuesta ("Decisión: excepción") aunque el registro y la traza eran correctos. Lo resolví con salida estructurada validada por código (D8).
 
 **Qué aprendí**
 - **Probabilístico vs determinista:** son probabilísticos el router con baja confianza, la redacción de la respuesta y los embeddings. Son deterministas las reglas de crédito, las validaciones y la idempotencia.
@@ -128,6 +128,6 @@ Fijé `mcp>=1.10,<2` y regeneré `uv.lock`.
 - **Qué simplificaría en un año:** usaría plantilla pura para las decisiones y LLM solo para consultas, y un PostgreSQL gestionado con el checkpointer oficial.
 
 **Qué decisión cambió después de probar**
-La respuesta base se arma por código y el LLM solo la reformula, con una plantilla de respaldo si Foundry falla.
+La respuesta final la redacta Foundry con salida estructurada (`estado`, `aprobador`, `monto`, `mensaje`) y el código la valida contra los hechos; si no coincide, se usa la plantilla.
 
-**Evidencia:** `uv run pytest` (55 pruebas), las ejecuciones del 2026-10-24, `git_log.txt` y el video (`VIDEO_LINK.txt`).
+**Evidencia:** `uv run pytest` (74 pruebas), las ejecuciones del 2026-10-24, `git_log.txt` y el video (`VIDEO_LINK.txt`).
