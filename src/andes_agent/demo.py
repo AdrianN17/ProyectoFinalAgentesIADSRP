@@ -40,6 +40,25 @@ def _construir(directo: bool, checkpointer):
     return construir_grafo(deps, checkpointer)
 
 
+def _correr(grafo, entrada, config, progreso: bool = True) -> dict:
+    """Ejecuta el grafo con stream: LangGraph emite un evento cada vez que termina un nodo."""
+    paso = 0
+    for evento in grafo.stream(entrada, config, stream_mode="updates"):
+        for nodo, cambios in evento.items():
+            if nodo == "__interrupt__":
+                if progreso:
+                    print("  [PAUSA] aprobacion_humana -> interrupt(): el flujo se detiene y el estado queda guardado")
+                continue
+            paso += 1
+            if progreso:
+                detalle = (cambios or {}).get("traza", [""])[0] if isinstance(cambios, dict) else ""
+                print(f"  [paso {paso}] nodo '{nodo}' terminado · {detalle}")
+    estado = grafo.get_state(config)
+    if estado.next:  # sigue pendiente un nodo: el grafo quedó pausado en un interrupt()
+        return {"__interrupt__": estado.tasks[0].interrupts}
+    return dict(estado.values)
+
+
 def _mostrar(resultado: dict, hilo: str) -> None:
     if "__interrupt__" in resultado:
         print(f"\n== FLUJO PAUSADO · id_hilo={hilo} · esperando a Finanzas/Crédito ==")
@@ -62,6 +81,7 @@ def main() -> None:
     re_.add_argument("--comentario", default="")
     for p in (ej, re_):
         p.add_argument("--directo", action="store_true", help="Consulta Azure SQL sin pasar por MCP.")
+        p.add_argument("--sin-progreso", action="store_true", help="No imprime el recorrido nodo por nodo.")
     args = ap.parse_args()
 
     observabilidad.iniciar()
@@ -77,14 +97,18 @@ def main() -> None:
                     "o 'reanudar' si está pausado."
                 )
             imprimir_parametros()
-            resultado = grafo.invoke({"solicitud": args.solicitud, "id_hilo": args.hilo}, config)
+            print(f"\nRecorrido del grafo (hilo {args.hilo}):")
+            resultado = _correr(grafo, {"solicitud": args.solicitud, "id_hilo": args.hilo}, config, not args.sin_progreso)
         else:
             if not grafo.get_state(config).next:
                 raise SystemExit(f"El hilo '{args.hilo}' no está pausado (no existe o ya terminó).")
-            resultado = grafo.invoke(
+            print(f"\nReanudando el hilo {args.hilo} desde su checkpoint:")
+            resultado = _correr(
+                grafo,
                 Command(resume={"aprobado": args.decision == "aprobar", "aprobador": args.aprobador,
                                 "comentario": args.comentario}),
                 config,
+                not args.sin_progreso,
             )
         _mostrar(resultado, args.hilo)
     finally:

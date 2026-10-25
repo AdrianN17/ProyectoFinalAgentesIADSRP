@@ -28,6 +28,7 @@ uv run andes-mcp-cliente                                               # cliente
 - `SIMULAR_FALLOS_FUENTES=2` en `.env` provoca 2 fallos transitorios y muestra el `RetryPolicy`.
 - `USE_LLM=false` desactiva Foundry para el chat (router por reglas, respuesta por plantilla).
 - `--directo` consulta Azure SQL sin pasar por MCP.
+- `ejecutar` y `reanudar` imprimen el recorrido del grafo nodo por nodo (`[paso n] nodo '...' terminado`); `--sin-progreso` lo oculta.
 - Cada `ejecutar` necesita un `--hilo` nuevo; `uv run andes-init-db --limpiar-demo` borra liberaciones e hilos de demos anteriores.
 - Guion completo de comandos para el video: [GUIA_EXPOSICION.md](./GUIA_EXPOSICION.md).
 
