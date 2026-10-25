@@ -24,7 +24,7 @@ Después pedí *"Puedes agregar lo que falta del checklist"* y *"ejecuta todos l
 
 - El código de `src/andes_agent/`: reglas, parser, router híbrido, RAG sobre Qdrant, acceso a Azure SQL, cliente de Foundry, grafo de LangGraph, servidor y cliente MCP, y el CLI.
 - Los scripts `sql/01_schema.sql`, `02_seed.sql`, `03_permisos.sql` y `04_checkpoints.sql`, y el checkpointer `AzureSqlSaver`.
-- Las pruebas de `tests/`, el `README.md`, `CHECKLIST.md`, `GUIA_EXPOSICION.md`, la carpeta `docs/` y los borradores de `HITOS.md`, `DECISIONES.md`, `EVIDENCIAS.md` y este archivo.
+- Las pruebas de `tests/`, el `README.md`, `CHECKLIST.md`, `GUIA_EXPOSICION.md`, la carpeta `docs/` y la redacción inicial de `HITOS.md`, `DECISIONES.md`, `EVIDENCIAS.md` y este archivo, que luego completé en primera persona.
 - Una revisión de mi diagrama con 5 observaciones: la ruta sin excepción no registraba la liberación, el camino de escritura quedaba fuera de MCP, el monto de revisión no tenía fuente, el stock insuficiente no debía ir a Finanzas, y el checkpoint no debía vivir en un archivo local.
 
 ## 4. Qué decidí y modifiqué yo
