@@ -1,4 +1,31 @@
-﻿commit 7197f9ff4331fc7f8c249ddc36602a3ec29bbbec
+﻿commit 5f9ed4973312f76d607a86ef1e6954ac15b354a5
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-25 18:15:00 -0500
+
+    Muestra el canal de acceso a las fuentes (MCP o directo) y mejora el prompt del redactor
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ GUIA_EXPOSICION.md          |  3 ++-
+ README.md                   |  2 +-
+ src/andes_agent/fuentes.py  |  8 ++++++++
+ src/andes_agent/graph.py    |  1 +
+ src/andes_agent/redactor.py |  4 +++-
+ tests/test_fuentes.py       | 11 +++++++++++
+ 6 files changed, 26 insertions(+), 3 deletions(-)
+
+commit 152abe869db5dbf5518771e9cce254e5e4a65355
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-25 15:17:32 -0500
+
+    Actualiza git_log.txt
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ git_log.txt | 31 ++++++++++++++++++++++++++++++-
+ 1 file changed, 30 insertions(+), 1 deletion(-)
+
+commit 7197f9ff4331fc7f8c249ddc36602a3ec29bbbec
 Author: Adrian N <adriannor12@hotmail.com>
 Date:   2026-10-25 15:17:32 -0500
 
