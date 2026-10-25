@@ -1,0 +1,135 @@
+﻿commit ce8e500ed8d3afb787cace4bf76f9efd89f8eda8
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-24 21:11:32 -0500
+
+    Docs: checklist actualizado con el estado final y pendientes del estudiante
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ CHECKLIST.md       | 90 ++++++++++++++++++++++++++++--------------------------
+ GUIA_EXPOSICION.md |  2 +-
+ 2 files changed, 47 insertions(+), 45 deletions(-)
+
+commit 21ba00a32af4f81b5c77fbe86da02832720ec0a4
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-24 21:10:18 -0500
+
+    Hito 6: integración, documentación, checklist y guía de exposición
+    
+    Agrupado por hito sobre el estado final del proyecto.
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ CHECKLIST.md       |  188 ++++
+ DECISIONES.md      |   77 ++
+ EVIDENCIAS.md      |  141 +++
+ GUIA_EXPOSICION.md |  319 ++++++
+ HITOS.md           |  133 +++
+ README.md          |   54 +
+ USO_IA.md          |   58 +
+ VIDEO_LINK.txt     |    1 +
+ requirements.txt   |   79 ++
+ uv.lock            | 2987 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 10 files changed, 4037 insertions(+)
+
+commit 26471cbad155653693af14444d0b8404ee52924f
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-24 21:10:18 -0500
+
+    Hito 5: servidor MCP stdio, cliente puro y agente consumidor
+    
+    Agrupado por hito sobre el estado final del proyecto.
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ docs/arquitectura.md                | 110 ++++++++++++++++++++++++++++++++++++
+ src/andes_agent/cliente_mcp_puro.py |  31 ++++++++++
+ src/andes_agent/mcp_client.py       |  60 ++++++++++++++++++++
+ src/andes_agent/mcp_server.py       |  75 ++++++++++++++++++++++++
+ tests/servidor_mcp_prueba.py        |  32 +++++++++++
+ tests/test_mcp.py                   |  64 +++++++++++++++++++++
+ 6 files changed, 372 insertions(+)
+
+commit 5b8bdbe64c9b2a5efd4d71b60f54eeaeedea79e1
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-24 21:10:18 -0500
+
+    Hito 4: retry técnico, checkpoint en Azure SQL e interrupt() con reanudación
+    
+    Agrupado por hito sobre el estado final del proyecto.
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ sql/03_permisos.sql               |  35 +++++
+ sql/04_checkpoints.sql            |  36 ++++++
+ src/andes_agent/checkpointer.py   | 264 ++++++++++++++++++++++++++++++++++++++
+ src/andes_agent/demo.py           |  95 ++++++++++++++
+ src/andes_agent/observabilidad.py |  17 +++
+ tests/test_checkpointer.py        | 116 +++++++++++++++++
+ 6 files changed, 563 insertions(+)
+
+commit 35f35e29b52a18aba9a226a4c9206461d3ac6014
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-24 21:10:18 -0500
+
+    Hito 3: workflow LangGraph con State pequeño y conditional edges
+    
+    Agrupado por hito sobre el estado final del proyecto.
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ docs/workflow_state.md      |  56 +++++++++++++
+ src/andes_agent/fuentes.py  |  48 +++++++++++
+ src/andes_agent/graph.py    | 189 ++++++++++++++++++++++++++++++++++++++++++++
+ src/andes_agent/redactor.py | 101 +++++++++++++++++++++++
+ tests/test_grafo.py         | 159 +++++++++++++++++++++++++++++++++++++
+ 5 files changed, 553 insertions(+)
+
+commit 365df3fed00bc1bff6290b64d85137d0e6bf10b6
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-24 21:10:18 -0500
+
+    Hito 2: router híbrido, RAG en Qdrant, SQL parametrizado y cliente Foundry
+    
+    Agrupado por hito sobre el estado final del proyecto.
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ src/andes_agent/foundry.py           |  54 ++++++++++++++++
+ src/andes_agent/indexar_politicas.py |  16 +++++
+ src/andes_agent/rag.py               | 118 +++++++++++++++++++++++++++++++++++
+ src/andes_agent/router.py            | 114 +++++++++++++++++++++++++++++++++
+ tests/test_rag.py                    |  23 +++++++
+ tests/test_router.py                 |  66 ++++++++++++++++++++
+ tests/test_sql.py                    |  85 +++++++++++++++++++++++++
+ 7 files changed, 476 insertions(+)
+
+commit b38aff6c05432294e1ab6b0f18e6b4acbfd0355b
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-24 21:10:17 -0500
+
+    Hito 1: datos, semilla 7885 y reglas de crédito deterministas
+    
+    Agrupado por hito sobre el estado final del proyecto.
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ .env.example                           |  37 ++++++++
+ .gitignore                             |   9 ++
+ data/politicas/politica_credito.md     |  16 ++++
+ data/politicas/politica_entrega.md     |  13 +++
+ data/politicas/politica_excepciones.md |  10 +++
+ docs/consulta_capacidad.md             |  30 +++++++
+ pyproject.toml                         |  37 ++++++++
+ sql/01_schema.sql                      | 136 ++++++++++++++++++++++++++++
+ sql/02_seed.sql                        |  81 +++++++++++++++++
+ src/andes_agent/__init__.py            |   1 +
+ src/andes_agent/config_caso.py         |  47 ++++++++++
+ src/andes_agent/db.py                  | 157 +++++++++++++++++++++++++++++++++
+ src/andes_agent/errores.py             |  18 ++++
+ src/andes_agent/init_db.py             |  69 +++++++++++++++
+ src/andes_agent/parser.py              |  31 +++++++
+ src/andes_agent/reglas.py              |  58 ++++++++++++
+ src/andes_agent/settings.py            |  68 ++++++++++++++
+ tests/test_reglas.py                   |  41 +++++++++
+ 18 files changed, 859 insertions(+)
