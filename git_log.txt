@@ -1,4 +1,28 @@
-﻿commit ce8e500ed8d3afb787cace4bf76f9efd89f8eda8
+﻿commit c75ba2a1f90c1927870e1373361851c6d49f29ce
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-24 21:26:13 -0500
+
+    Docs: HITOS y USO_IA completados en primera persona
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ CHECKLIST.md |  14 ++++----
+ HITOS.md     | 112 +++++++++++++++++++++++++++++------------------------------
+ USO_IA.md    |  68 ++++++++++++++++++------------------
+ 3 files changed, 98 insertions(+), 96 deletions(-)
+
+commit 83b58f596ad7aff2abdd5fa23a4ae3281c8486e8
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-24 21:11:32 -0500
+
+    Agrega git_log.txt
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ git_log.txt | 135 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 135 insertions(+)
+
+commit ce8e500ed8d3afb787cace4bf76f9efd89f8eda8
 Author: Adrian N <adriannor12@hotmail.com>
 Date:   2026-10-24 21:11:32 -0500
 
