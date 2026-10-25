@@ -1,4 +1,26 @@
-﻿commit 8ebc47c510251e530b053fadbb8c1bb9ea8a917c
+﻿commit 224d9b472c95c76cb647f8f59b5c85dd553bcefb
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-25 14:44:53 -0500
+
+    README: diagramas de secuencia para todos los casos del agente
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ README.md | 276 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 276 insertions(+)
+
+commit 679b7fb4f66ec06a585c5ef567cadeba2d0f10b1
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-25 10:05:28 -0500
+
+    Actualiza git_log.txt
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ git_log.txt | 33 ++++++++++++++++++++++++++++++++-
+ 1 file changed, 32 insertions(+), 1 deletion(-)
+
+commit 8ebc47c510251e530b053fadbb8c1bb9ea8a917c
 Author: Adrian N <adriannor12@hotmail.com>
 Date:   2026-10-25 10:05:28 -0500
 
