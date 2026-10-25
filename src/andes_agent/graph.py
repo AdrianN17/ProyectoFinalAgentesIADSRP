@@ -89,7 +89,9 @@ def construir_grafo(
     reintento = reintento or RetryPolicy(max_attempts=3, initial_interval=0.5, retry_on=FalloTransitorio)
 
     def parsear_solicitud(e: Estado) -> dict[str, Any]:
+        print("    · [parsear_solicitud] extrayendo cliente, SKU y cantidad con expresiones regulares (sin LLM)")
         s = parsear(e["solicitud"])
+        print(f"    · [parsear_solicitud] cliente={s.cliente_id} sku={s.sku} cantidad={s.cantidad}")
         return {
             "cliente_id": s.cliente_id, "sku": s.sku, "cantidad": s.cantidad,
             "evidencia": {}, "decision": {}, "aprobacion": {}, "liberacion": {},
@@ -97,7 +99,10 @@ def construir_grafo(
         }
 
     def enrutar(e: Estado) -> dict[str, Any]:
+        print("    · [enrutar] eligiendo capacidad: reglas primero, Foundry solo si la confianza es baja")
         ruta = deps.router.decidir(e["solicitud"], Solicitud(e["cliente_id"], e["sku"], e["cantidad"]))
+        print(f"    · [enrutar] destino={ruta.destino} intencion={ruta.intencion} "
+              f"confianza={ruta.confianza:.2f} origen={ruta.origen} ({ruta.motivo})")
         return {
             "destino": ruta.destino, "intencion": ruta.intencion, "confianza": ruta.confianza,
             "traza": [f"enrutar:{ruta.destino}/{ruta.intencion}({ruta.origen},{ruta.confianza:.2f})"],
@@ -105,22 +110,28 @@ def construir_grafo(
 
     def consultar_fuentes(e: Estado) -> dict[str, Any]:
         intencion = e["intencion"]
+        print(f"    · [consultar_fuentes] reuniendo evidencia para la intención '{intencion}' (único nodo con retry)")
         plan = _plan(intencion, e.get("cliente_id"), e.get("sku"))
         evidencia: dict[str, Any] = {}
         if plan:
+            print(f"    · [consultar_fuentes] tools: {', '.join(nombre for nombre, _ in plan.values())}")
             resultados = deps.fuentes.llamar(list(plan.values()))
             evidencia = dict(zip(plan.keys(), resultados))
         advertencias: list[str] = []
         if intencion in {"liberacion", "politica"}:
             consulta = e["solicitud"] if intencion == "politica" else CONSULTA_POLITICA_LIBERACION
+            print("    · [consultar_fuentes] RAG: buscando política en Qdrant (embedding con Foundry)")
             try:
                 evidencia["politica"] = deps.politicas.buscar(consulta, k=2, umbral=UMBRAL_RAG)
             except Exception as ex:  # noqa: BLE001 - la política cita, no decide: se degrada con advertencia
                 evidencia["politica"] = []
                 advertencias.append(f"RAG (Qdrant) no disponible: {type(ex).__name__}")
+                print(f"    · [consultar_fuentes] RAG no disponible ({type(ex).__name__}): se continúa sin citas")
+        print(f"    · [consultar_fuentes] evidencia lista: {', '.join(evidencia) or 'ninguna'}")
         return {"evidencia": evidencia, "advertencias": advertencias, "traza": ["consultar_fuentes"]}
 
     def evaluar_reglas(e: Estado) -> dict[str, Any]:
+        print("    · [evaluar_reglas] aplicando reglas de crédito en Python (determinista, sin LLM)")
         ev = e["evidencia"]
         stock, credito = ev["stock"], ev["credito"]
         d = evaluar_liberacion(
@@ -129,10 +140,14 @@ def construir_grafo(
             cantidad=e.get("cantidad"),
             monto_revision=ev["parametros"]["monto_revision"],
         )
+        print(f"    · [evaluar_reglas] resultado={d.resultado} motivos={d.motivos or 'ninguno'} "
+              f"monto={d.monto:.2f} exposicion={d.exposicion:.2f} limite={d.limite:.2f}")
         return {"decision": asdict(d), "traza": [f"evaluar_reglas:{d.resultado}"]}
 
     def aprobacion_humana(e: Estado) -> dict[str, Any]:
         # Sin side effects antes de interrupt(): al reanudar este nodo se ejecuta de nuevo desde el inicio.
+        print("    · [aprobacion_humana] solicitando decisión de Finanzas/Crédito "
+              "(al reanudar, este nodo se ejecuta otra vez desde el inicio)")
         respuesta = interrupt({
             "tipo": "aprobacion_credito",
             "id_hilo": e["id_hilo"],
@@ -142,17 +157,22 @@ def construir_grafo(
             "aprobador_requerido": "Finanzas/Crédito",
         })
         ap = Aprobacion.model_validate(respuesta)
+        print(f"    · [aprobacion_humana] decisión recibida: {'APROBADA' if ap.aprobado else 'RECHAZADA'} por {ap.aprobador}")
         return {"aprobacion": ap.model_dump(), "traza": [f"aprobacion_humana:{'aprobada' if ap.aprobado else 'rechazada'}"]}
 
     def registrar_liberacion(e: Estado) -> dict[str, Any]:
         d = e["decision"]
         aprobador = e.get("aprobacion", {}).get("aprobador") or "REGLAS_AUTOMATICAS"
+        print(f"    · [registrar_liberacion] escribiendo en ops.liberaciones (idempotente por id_hilo), aprobador={aprobador}")
         lib = deps.registrador.registrar_liberacion(
             e["id_hilo"], e["cliente_id"], e["sku"], e["cantidad"], d["monto"], aprobador, d["motivos"],
         )
+        print(f"    · [registrar_liberacion] liberacion_id={lib['liberacion_id']} "
+              f"({'creada' if lib['creada'] else 'ya existía, no se duplica'})")
         return {"liberacion": lib, "traza": ["registrar_liberacion"]}
 
     def responder(e: Estado) -> dict[str, Any]:
+        print("    · [responder] armando la respuesta final (plantilla + fuentes + trazabilidad; Foundry solo la reformula)")
         return {"respuesta": deps.redactor.redactar(dict(e)), "traza": ["responder"]}
 
     def tras_enrutar(e: Estado) -> str:
