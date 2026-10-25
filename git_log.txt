@@ -1,4 +1,26 @@
-﻿commit c75ba2a1f90c1927870e1373361851c6d49f29ce
+﻿commit e6569f26b2bf15ca2f54469534d33c067594e91b
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-24 21:26:21 -0500
+
+    Docs: precisa la redacción de USO_IA
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ USO_IA.md | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit c311901c2ddbe6e769a8744eb63a6ff503f7e54f
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-24 21:26:13 -0500
+
+    Actualiza git_log.txt
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ git_log.txt | 26 +++++++++++++++++++++++++-
+ 1 file changed, 25 insertions(+), 1 deletion(-)
+
+commit c75ba2a1f90c1927870e1373361851c6d49f29ce
 Author: Adrian N <adriannor12@hotmail.com>
 Date:   2026-10-24 21:26:13 -0500
 
