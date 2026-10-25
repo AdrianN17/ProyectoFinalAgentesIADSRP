@@ -1,4 +1,27 @@
-﻿commit e6569f26b2bf15ca2f54469534d33c067594e91b
+﻿commit 9c8bf7dc4cb249ee3b3b4ce9929b5baff02e016e
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-25 09:49:45 -0500
+
+    CLI: muestra el recorrido del grafo nodo por nodo con stream
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ README.md               |  1 +
+ src/andes_agent/demo.py | 28 ++++++++++++++++++++++++++--
+ 2 files changed, 27 insertions(+), 2 deletions(-)
+
+commit 100c5389f12d0a33b599d0299d49641586e202b2
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-24 21:26:21 -0500
+
+    Actualiza git_log.txt
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ git_log.txt | 24 +++++++++++++++++++++++-
+ 1 file changed, 23 insertions(+), 1 deletion(-)
+
+commit e6569f26b2bf15ca2f54469534d33c067594e91b
 Author: Adrian N <adriannor12@hotmail.com>
 Date:   2026-10-24 21:26:21 -0500
 
