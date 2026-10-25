@@ -1,4 +1,35 @@
-﻿commit d574a92ac8855fffc29f8e9b939b70253538bf67
+﻿commit 8ebc47c510251e530b053fadbb8c1bb9ea8a917c
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-25 10:05:28 -0500
+
+    Redactor: salida estructurada del LLM validada contra los hechos (estado, aprobador, monto)
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ CHECKLIST.md                |  10 ++--
+ DECISIONES.md               |  16 +++---
+ EVIDENCIAS.md               |   4 +-
+ GUIA_EXPOSICION.md          |   3 +-
+ HITOS.md                    |   6 +--
+ README.md                   |   2 +-
+ USO_IA.md                   |   3 +-
+ docs/arquitectura.md        |   2 +-
+ src/andes_agent/redactor.py | 118 +++++++++++++++++++++++++++++++++++++++-----
+ tests/test_redactor.py      | 113 ++++++++++++++++++++++++++++++++++++++++++
+ 10 files changed, 243 insertions(+), 34 deletions(-)
+
+commit 5900ec5e5e3022db37d5d3837ef96a9e40d57ecd
+Author: Adrian N <adriannor12@hotmail.com>
+Date:   2026-10-25 09:54:59 -0500
+
+    Actualiza git_log.txt
+    
+    Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+
+ git_log.txt | 24 +++++++++++++++++++++++-
+ 1 file changed, 23 insertions(+), 1 deletion(-)
+
+commit d574a92ac8855fffc29f8e9b939b70253538bf67
 Author: Adrian N <adriannor12@hotmail.com>
 Date:   2026-10-25 09:54:59 -0500
 
