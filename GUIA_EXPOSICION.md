@@ -313,7 +313,7 @@ Dilo en este orden (30–45 s):
 ```powershell
 uv run andes-init-db --limpiar-demo
 Copy-Item $env:TEMP\config_caso.bak src\andes_agent\config_caso.py -Force   # solo si cambiaste el código
-git log --oneline > git_log.txt                                              # cuando tengas el repositorio
+git log --stat > git_log.txt                                                 # regenerar tras tus commits
 ```
 
 Pega el enlace del video en `VIDEO_LINK.txt` y no incluyas `.env` en la entrega.
