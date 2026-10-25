@@ -278,7 +278,19 @@ Dilo en este orden (30–45 s):
 - **2 trade-offs:**
   1. Checkpointer propio sobre Azure SQL (todo en Azure, sin archivos locales) a cambio de mantener código que no tiene la madurez de los oficiales.
   2. Router híbrido: reglas primero (barato y reproducible) y LLM solo con baja confianza; menos flexible que un LLM puro, pero predecible.
-- **1 error propio** (elige uno real): `checkpoint` es palabra reservada de T-SQL y la tabla no se creaba hasta usar `[checkpoint]`; o `mcp>=1.10` sin tope instalaba mcp 2.x y rompía el servidor (corregido con `<2` y `uv.lock`).
+- **1 error propio** (elige uno real): `checkpoint` es palabra reservada de T-SQL y la tabla no se creaba hasta usar `[checkpoint]`; o `mcp>=1.10` sin tope instalaba mcp 2.x y rompía el servidor (corregido con `<2` y `uv.lock`); o el error del router de abajo, que puedes **reproducir en vivo**.
+
+  *Demo del error del router (opcional, 1 min).* La frase `"El cliente C-1004 no pagó, ¿qué dice la política de hold?"` iba a `TOOLS/credito` con confianza 0.85 en vez de a RAG. Para reproducirlo, en [router.py](src/andes_agent/router.py) comenta las dos líneas de la regla `pregunta explícita de política` (`if _tiene(t, ["politica", "normativa", ...]): return Ruta("RAG", ...)`) y ejecuta:
+  ```powershell
+  uv run andes-demo ejecutar --hilo ERR-1 "El cliente C-1004 no pagó, ¿qué dice la política de hold?"
+  #   -> [enrutar] destino=TOOLS intencion=credito confianza=0.85   (el error)
+  uv run pytest -q tests/test_router.py
+  #   -> 1 failed, 18 passed: la prueba de regresión detecta el error
+  git checkout -- src/andes_agent/router.py
+  uv run andes-demo ejecutar --hilo OK-1 "El cliente C-1004 no pagó, ¿qué dice la política de hold?"
+  #   -> [enrutar] destino=RAG intencion=politica confianza=0.80     (corregido) y Fuentes: politica_credito.md · Cliente en hold
+  ```
+  Causa: la regla "cliente + palabra `hold`" se evaluaba antes que la de política. Corrección: una pregunta explícita de política gana aunque mencione un cliente.
 - **1 mejora para producción:** autenticar Azure SQL con Microsoft Entra ID / identidad administrada (sin contraseña), y un checkpointer sobre una base con soporte oficial o pruebas de concurrencia.
 
 ---
