@@ -49,6 +49,7 @@ def evaluar_liberacion(
         motivos.append("cliente_en_hold")
     if exposicion + monto > limite:
         motivos.append("linea_insuficiente")
+    #Modificacion de Regla de negocio
     if monto >= _d(monto_revision):
         motivos.append("monto_requiere_revision")
 

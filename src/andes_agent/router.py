@@ -66,6 +66,7 @@ def enrutar_por_reglas(texto: str, sol: Solicitud) -> Ruta:
             return Ruta("TOOLS", "liberacion", 0.9, "liberación con cliente, SKU y cantidad", "reglas")
         return Ruta("CLARIFY", "ninguna", 0.9, "liberación sin cliente, SKU o cantidad completos", "reglas")
     # Una pregunta explícita sobre la política gana aunque mencione a un cliente ("¿qué dice la política de hold?")
+    #Caso de prueba para error propio
     if _tiene(t, ["politica", "normativa", "procedimiento", "reglamento"]):
         return Ruta("RAG", "politica", 0.8, "pregunta explícita de política", "reglas")
     if sol.cliente_id and _tiene(t, ["historial", "pagos", "facturas", "compras", "vencid"]):
